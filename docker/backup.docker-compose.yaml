@@ -1,0 +1,57 @@
+# version: "3.8"
+
+x-rabbitmq-env: &rabbitmq-env
+    RABBITMQ_URL: rabbitmq
+    RABBITMQ_PORT: 5672
+    RABBITMQ_DEFAULT_USER: admin
+    RABBITMQ_DEFAULT_PASS: admin
+    TASKS_STATUS_QUEUE: task_status_queue
+    ACCOUNTS_QUEUE: accounts_queue
+
+services:
+
+    # photo-merger:
+    #     container_name: photo-merger
+    #     build:
+    #         context: ..
+    #         dockerfile: docker/Dockerfiles/Dockerfile.photo-merger
+    #     ports:
+    #         - "3006:3000" # for development
+    #     volumes:
+    #         - ../db/photo-server/src:/src
+    #         - ../db/photo-server/staging:/staging
+    #         - ../engines/photo-merger:/photo-merger # for development
+    #     environment:
+    #         - PROD_IMAGE_DIR=/images
+    #     # command: >
+    #     #     /bin/bash -c "export NVM_DIR=/root/.nvm &&  source /root/.nvm/nvm.sh &&  nvm use default &&  cd /photo-server &&  nodemon server.js"
+
+    photo-server:
+        container_name: photo-server
+        build:
+            context: ..
+            dockerfile: docker/Dockerfiles/Dockerfile.photo-server
+        # ports:
+        #     - "3005:3000" # for development
+        volumes:
+            - ../db/photo-server/images:/images
+            # - ../engines/photo-server:/photo-server # for development
+        environment:
+            - PROD_IMAGE_DIR=/images
+        command: npx nodemon server.js
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq
+        ports:
+            - "15674:15672"
+        volumes:
+            - ../db/rabbitmq:/var/lib/rabbitmq
+        environment:
+            <<: *rabbitmq-env
+        restart: unless-stopped
+        healthcheck:
+            test: [ "CMD", "rabbitmqctl", "status" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3

@@ -1,0 +1,50 @@
+.cui-dialog-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--cui-card-bg, #fff);
+    border-radius: 8px;
+    box-shadow: var(--cui-box-shadow, 0px 4px 10px rgba(0, 0, 0, 0.1));
+    padding: 16px;
+    text-align: center;
+    font-family: var(--arabic-font);
+}
+
+// Header
+.cui-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--cui-border-color, #e0e0e0);
+    padding-bottom: 12px;
+}
+
+.dialog-icon {
+    width: 32px;
+}
+
+// Body
+.cui-dialog-body {
+    padding: 16px 0;
+    font-size: 24px;
+    color: var(--cui-text-color, #333);
+}
+
+// Footer (Actions)
+.cui-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--cui-border-color, #e0e0e0);
+    padding-top: 12px;
+    gap: 8px;
+}
+
+.cancel-btn {
+    color: var(--cui-danger, #dc3545);
+}
+
+.confirm-btn {
+    background-color: var(--cui-primary, #007bff);
+    color: #fff;
+    font-weight: bold;
+    border-radius: 6px;
+}

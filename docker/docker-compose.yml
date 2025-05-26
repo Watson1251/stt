@@ -1,0 +1,26 @@
+# docker-compose.yml (base)
+version: "3.8"
+
+services:
+
+    backend-stt:
+        container_name: backend-stt
+        build:
+            context: ..
+            dockerfile: docker/Dockerfiles/Dockerfile.backend
+        volumes:
+            - ../db/logs:/logs
+            - ../db/media:/db/media
+        environment:
+            - SERVICE_NAME=backend-stt
+            - MONGODB_URL=mongodb://mongo:27017/stt_db
+            - UPLOAD_DIR=/db/media/
+
+    mongo:
+        image: mongo:6.0
+        container_name: mongo
+        restart: always
+        ports:
+            - "27020:27017"
+        volumes:
+            - ../db/mongo:/data/db

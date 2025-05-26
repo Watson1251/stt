@@ -1,0 +1,9 @@
+services:
+
+  backend-stt:
+    ports:
+      - "3005:3000"
+    volumes:
+      - ../backend:/backend
+      - ../engines/utils:/backend/utils
+    command: npx nodemon server.js

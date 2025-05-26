@@ -1,0 +1,445 @@
+.main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.smartphone {
+    width: 800px;
+    /* Adjust based on your image size */
+    height: 800px;
+    background: url('src/assets/iphone-frame.png') no-repeat center center;
+    /* 🛠 Add your smartphone image */
+    background-size: contain;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Screen Area - Place Content in the Right Position */
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 80%;
+    padding: 20px;
+    gap: 20px;
+    max-height: 600px;
+    /* Set a reasonable max-height */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    scrollbar-width: none;
+    /* For Firefox */
+    scrollbar-color: #8aa6c1 transparent;
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+.screen::-webkit-scrollbar {
+    width: 5px;
+}
+
+.screen::-webkit-scrollbar-thumb {
+    background-color: #8aa6c1;
+    border-radius: 5px;
+}
+
+.screen::-webkit-scrollbar-track {
+    background: transparent;
+    /* Keeps it clean */
+}
+
+/* Editable Input Fields */
+.input-field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    padding: 5px;
+    text-align: center;
+    // text-align: right;
+    /* Ensure RTL alignment */
+    font-family: var(--arabic-font);
+    border-bottom: 1px solid #d1d1d6;
+    /* iOS-style subtle border */
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Focus effect */
+.input-field:focus {
+    border-bottom: 1px solid #007bff;
+    /* iOS-style blue when active */
+}
+
+/* When Invalid, Change Focus Color to Red */
+.invalid-input {
+    border-bottom: 1px solid red !important;
+}
+
+.invalid-input:focus {
+    border-bottom: 1px solid red !important;
+}
+
+/* Hide arrows in Chrome, Safari, Edge, and Opera */
+.input-field[type=number]::-webkit-outer-spin-button,
+.input-field[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide arrows in Firefox */
+.input-field[type=number] {
+    -moz-appearance: textfield;
+}
+
+.pin-container {
+    cursor: pointer;
+}
+
+.masked-pin {
+    color: #888;
+}
+
+.visible-pin {
+    color: #000;
+    font-weight: bold;
+}
+
+.pin-input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-direction: row-reverse;
+    /* Reverses icon and input order */
+
+    input {
+        flex: 1;
+        padding-left: 35px;
+        /* Space for the icon on the left */
+        padding-right: 10px;
+        /* Normal padding on the right */
+    }
+
+    .visibility-icon {
+        position: absolute;
+        left: 10px;
+        /* Move icon to the left */
+        cursor: pointer;
+        color: gray;
+    }
+
+    .visibility-icon:hover {
+        color: black;
+    }
+}
+
+mat-label,
+input,
+mat-error,
+button,
+::ng-deep .mdc-form-field {
+    font-family: var(--arabic-font);
+}
+
+mat-error {
+    font-size: 12px;
+    color: red;
+}
+
+.disabled-input {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.mat-form-field {
+    width: 100%;
+    direction: rtl;
+}
+
+.mat-select {
+    font-family: var(--arabic-font) !important;
+}
+
+.mat-mdc-option {
+    font-family: var(--arabic-font) !important;
+    background-color: white !important;
+}
+
+.example-additional-selection {
+    font-size: 14px;
+    color: gray;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+}
+
+::ng-deep .mdc-line-ripple {
+    display: none !important;
+}
+
+/* Ensure the dropdown panel has a white background */
+::ng-deep .mat-mdc-select-panel {
+    background-color: white !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+    /* Optional: Adds a slight shadow */
+}
+
+.no-accounts-message {
+    color: blue;
+    text-decoration: underline;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    font-family: var(--arabic-font);
+}
+
+.account-option {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+.account-username {
+    font-size: 12px;
+    color: gray;
+}
+
+
+/* Twitter (X) Logo */
+.logo {
+    width: 100px;
+}
+
+/* Title */
+.title {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    font-family: var(--arabic-font);
+    font-weight: bolder;
+}
+
+/* General Content Styling */
+.content {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    width: 80%;
+    padding: 15px;
+}
+
+.device-name-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.device-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.device-icon {
+    color: #6c757d;
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Blinking green for connected */
+.blinking-green {
+    background-color: #28a745;
+    animation: blink-animation 1s infinite;
+}
+
+@keyframes blink-animation {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Solid red for disconnected */
+.solid-red {
+    background-color: #dc3545;
+}
+
+.disconnected-device {
+    opacity: 0.3;
+    /* Adjust transparency as needed */
+}
+
+.accounts-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.account-chip {
+    background-color: #d1d1d6;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: var(--arabic-font);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.account-chip:hover {
+    background-color: #b2f2c3;
+}
+
+
+/* No device message */
+.no-device {
+    font-size: 18px;
+    color: #888;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-family: var(--arabic-font);
+}
+
+/* Individual Item Styling */
+.item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 15px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+/* Labels */
+.label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 3px;
+    font-weight: bolder;
+    font-family: var(--arabic-font);
+}
+
+/* Values */
+.value {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    font-family: var(--arabic-font);
+}
+
+/* Divider (iOS Style Separator) */
+.divider {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+/* Default button style */
+.action-btn {
+    background: #007bffc8;
+    /* iOS blue */
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: bolder;
+    text-align: center;
+    width: 90%;
+    max-width: 280px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enabled state */
+.enabled-btn {
+    background: #007bff !important;
+    cursor: pointer;
+}
+
+.enabled-btn:hover {
+    background: #005ecb !important;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.enabled-btn:active {
+    background: #004ea1 !important;
+    transform: scale(0.98);
+}
+
+/* Enabled state */
+.delete-btn {
+    background: #f32222c8 !important;
+}
+
+.delete-enabled-btn {
+    background: #f32222c8 !important;
+    cursor: pointer;
+}
+
+.delete-enabled-btn:hover {
+    background: #f32222f4 !important;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.delete-enabled-btn:active {
+    background: #f32222c8 !important;
+    transform: scale(0.98);
+}
+
+/* Disabled state */
+.disabled-btn {
+    background: #d1d1d6 !important;
+    color: #a1a1a6 !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+
+.card-header-title {
+    font-family: var(--arabic-font);
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.bg-body-tertiary {
+    font-family: var(--arabic-font);
+}
+
+.table-body {
+    font-family: var(--arabic-font);
+}
+
+.warning-field {
+    color: red;
+}

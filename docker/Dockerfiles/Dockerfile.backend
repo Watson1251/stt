@@ -1,0 +1,28 @@
+# --- Builder Stage (optional if you have build tools or TS) ---
+FROM node:18-slim AS builder
+
+WORKDIR /backend
+
+COPY backend/package*.json ./
+RUN npm install
+
+COPY backend .
+COPY engines/utils /backend/utils
+
+# Install winston (if it's not already in package.json)
+RUN npm install winston
+
+# --- Runtime Stage ---
+FROM node:18-slim
+
+WORKDIR /backend
+
+COPY --from=builder /backend /backend
+
+RUN npm install -g pm2
+
+EXPOSE 3000
+
+ENV SERVICE_NAME=backend
+
+CMD ["/bin/bash"]

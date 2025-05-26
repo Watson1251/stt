@@ -1,0 +1,5 @@
+services:
+  backend-stt:
+    ports:
+      - "3000:3000"
+    command: node server.js

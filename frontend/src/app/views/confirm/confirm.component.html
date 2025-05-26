@@ -1,0 +1,21 @@
+<div class="cui-dialog-card">
+    <!-- Header -->
+    <div class="cui-dialog-header">
+        <mat-icon class="dialog-icon" [ngClass]="data.iconClass">{{ data.icon }}</mat-icon>
+        <h4 class="dialog-title">{{ data.title }}</h4>
+    </div>
+
+    <!-- Body -->
+    <div class="cui-dialog-body">
+        <p class="dialog-message">{{ data.message }}</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="cui-dialog-footer">
+        <button mat-button class="cancel-btn" (click)="onCancel()">إلغاء</button>
+        <button mat-raised-button class="confirm-btn"
+            [ngClass]="data.confirmButtonColor === 'primary' ? 'mat-primary' : 'mat-warn'" (click)="onConfirm()">
+            {{ data.confirmButtonText }}
+        </button>
+    </div>
+</div>

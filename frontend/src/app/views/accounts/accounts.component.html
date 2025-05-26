@@ -1,0 +1,105 @@
+<c-row class="h-100 align-items-center main-container">
+    <c-col *ngIf="accounts.length > 0" lg="8" class="h-100 d-flex flex-column">
+        <c-card [cBorder]="{top: {color: 'info', width: 3}}" [textColor]="'black'" class="mb-3 flex-grow-1">
+            <c-card-header class="card-header-title">حسابات منصة X</c-card-header>
+            <c-card-body>
+                <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                    <thead class="text-nowrap text-truncate">
+                        <tr>
+                            <th class="bg-body-tertiary text-center">
+                                <!-- <svg cIcon name="cilScreenSmartphone"></svg> -->
+                            </th>
+                            <th class="bg-body-tertiary">ت</th>
+                            <th class="bg-body-tertiary">اسم الحساب</th>
+                            <th class="bg-body-tertiary">معرّف الحساب</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body" dir="rtl">
+                        <tr *ngFor="let account of paginatedAccounts; let i = index"
+                            (click)="onRowClick(account, $event)">
+
+                            <td class="text-center">
+                                <mat-checkbox [checked]="selectedAccount === account" (click)="$event.stopPropagation()"
+                                    (change)="onCheckboxChange($event, account)">
+                                </mat-checkbox>
+                                <!-- <c-avatar [size]="'md'" src="{{ device.avatar }}" status="{{ device.status }}" /> -->
+                            </td>
+                            <td>
+                                <span>
+                                    {{ Helper.enToAr(i+1) }}
+                                </span>
+                            </td>
+                            <td>
+                                <div [ngClass]="{'warning-field': !account.name}">
+                                    {{ account.name || "-" }}
+                                </div>
+                            </td>
+                            <td>
+                                <div [ngClass]="{'warning-field': !account.username}">
+                                    {{ !account.username ? "-" : account.username + "@" }}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Paginator -->
+                <app-paginator [data]="accounts" (paginatedData)="paginatedAccounts = $event"></app-paginator>
+            </c-card-body>
+        </c-card>
+    </c-col>
+    <c-col lg="4" class="h-100 d-flex align-items-center justify-content-center">
+        <div class="smartphone">
+            <!-- Top Speaker -->
+            <div class="top-speaker"></div>
+
+            <!-- Camera Button -->
+            <div class="camera"></div>
+
+            <!-- Screen -->
+            <div class="screen">
+                <img class="logo" src="assets/x-logo.png" alt="X-logo">
+                <span class="title">{{titleLabel}}</span>
+                <span class="title" *ngIf="!selectedAccount && accounts.length > 0">أو</span>
+                <span class="title-link" *ngIf="!selectedAccount" (click)="onAdd()">أضِف حسابًا جديدًا <mat-icon
+                        class="add-icon">add</mat-icon></span>
+
+
+                <div *ngIf="selectedAccount" class="content">
+                    <form [formGroup]="formValidator">
+                        <div class="item">
+                            <span class="label">{{nameLabel}}</span>
+                            <input dir="ltr" formControlName="name" class="value input-field" type="text"
+                                [ngClass]="{'invalid-input': isInvalid('name')}">
+                            <mat-error *ngIf="isInvalid('name')">{{nameError}}</mat-error>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="item">
+                            <span class="label">{{usernameLabel}}</span>
+                            <input dir="ltr" formControlName="username" class="value input-field" type="text"
+                                [ngClass]="{'invalid-input': isInvalid('username')}">
+                            <mat-error *ngIf="isInvalid('username')">{{usernameError}}</mat-error>
+                        </div>
+                        <div class="divider"></div>
+                    </form>
+                </div>
+
+
+
+                <button class="action-btn" *ngIf="selectedAccount" [disabled]="isSubmitDisabled()"
+                    [ngClass]="{ 'enabled-btn': !isSubmitDisabled(), 'disabled-btn': isSubmitDisabled() }"
+                    (click)="onSubmit()">
+                    {{submitButton}}
+                </button>
+
+
+                <button class="action-btn delete-btn" *ngIf="selectedAccount && submitButton == 'تحديث'"
+                    [disabled]="!isDelete" [ngClass]="{ 'delete-enabled-btn': isDelete, 'disabled-btn': !isDelete }"
+                    (click)="onDelete()">{{deleteButton}}</button>
+            </div>
+
+            <!-- Home Button -->
+            <div class="home-button"></div>
+        </div>
+    </c-col>
+</c-row>

@@ -1,0 +1,13 @@
+mat-paginator {
+    font-family: var(--arabic-font);
+}
+
+::ng-deep .mat-mdc-icon-button[disabled],
+::ng-deep .mat-mdc-icon-button.mat-mdc-button-disabled {
+    color: gray !important;
+    /* Change disabled buttons to gray */
+    opacity: 0.5 !important;
+    /* Make them visually dim */
+    cursor: not-allowed !important;
+    /* Show 'not-allowed' cursor */
+}

@@ -1,0 +1,154 @@
+<c-row class="h-100 align-items-center main-container">
+
+    <c-col *ngIf="isScheduled || actions.length == 0" class="h-100 d-flex flex-column">
+        <app-schedule (scheduledChanged)="isScheduled = $event"></app-schedule>
+    </c-col>
+
+    <c-col *ngIf="!isScheduled && devices.length > 0 && actions.length > 0" lg="8" class="h-100 d-flex flex-column">
+        <c-card [cBorder]="{top: {color: 'info', width: 3}}" [textColor]="'black'" class="mb-3 flex-grow-1">
+            <c-card-header class="card-header-title">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <span>حالة التغريدات</span>
+                    <button class="btn btn-sm btn-outline-info d-flex align-items-center"
+                        (click)="isScheduled = !isScheduled">
+                        <mat-icon class="add-icon">add</mat-icon>
+                    </button>
+                </div>
+            </c-card-header>
+            <c-card-body>
+
+                <c-accordion [alwaysOpen]="true">
+                    <c-accordion-item *ngFor="let device of paginatedDevices; let i = index" #item="cAccordionItem"
+                        [visible]="false" [ngClass]="{'dimmed': !device.isConnected}">
+                        <!-- Header -->
+                        <ng-template cTemplateId="accordionHeaderTemplate">
+                            <button (click)="item.toggleItem()" cAccordionButton
+                                class="w-100 d-flex justify-content-between align-items-center"
+                                [collapsed]="!item.visible" cAccordionButton>
+                                <div class="device-name-container">
+                                    <mat-icon class="device-icon">smartphone</mat-icon>
+                                    <span class="status-dot" [ngClass]="getStatusClass(device)"></span>
+                                    <div>
+                                        <div>{{ device.name || "-" }}</div>
+                                        <div class="small text-body-secondary text-nowrap">{{ device.serial }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ms-auto account-container">
+                                    <c-col *ngFor="let idx of [0, 1, 2]">
+                                        <!-- Accounts display (fixed 3 slots) -->
+                                        <div class="account-preview text-nowrap" dir="ltr"
+                                            *ngIf="device.accounts && device.accounts[idx]"
+                                            (mouseover)="setHoverState(device.id, idx, true)"
+                                            (mouseout)="setHoverState(device.id, idx, false)">
+
+
+                                            <!-- Row 1: Username/Name + Status -->
+                                            <div class="account-column">
+
+                                                <span class="fw-bold me-2">
+                                                    {{
+                                                    isHovered(device.id, idx)
+                                                    ? getName(device.accounts[idx])
+                                                    : getUsername(device.accounts[idx])
+                                                    }}
+                                                </span>
+
+                                                <span class="text-muted small">
+                                                    {{
+                                                    getStatus(getLastAction(device.accounts[idx]))
+                                                    }}
+                                                </span>
+
+                                                <span class="text-muted small">
+                                                    {{
+                                                    formatTimestamp(getLastAction(device.accounts[idx]))
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </div>
+
+
+                            </button>
+                        </ng-template>
+
+                        <!-- Body -->
+                        <ng-template cTemplateId="accordionBodyTemplate">
+                            <div class="accordion-body">
+                                <c-tabs [(activeItemKey)]="activeTabIndexMap[device.id]">
+
+                                    <c-tabs-list layout="fill" variant="tabs">
+                                        <button *ngFor="let accountId of device.accounts; let idx = index" cTab
+                                            [itemKey]="idx" dir="ltr">
+                                            {{ getUsername(accountId) || 'Account ' + (idx + 1) }}
+                                        </button>
+                                    </c-tabs-list>
+
+                                    <c-tab-panel *ngFor="let accountId of device.accounts; let idx = index"
+                                        [itemKey]="idx" class="p-3">
+                                        <ng-container *ngIf="getActionsByAccount(accountId).length == 0">
+                                            <h5 class="no-items">لا يوجد اجراءات سابقة لهذا الحساب</h5>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="activeTabIndexMap[device.id] === idx && getActionsByAccount(accountId).length > 0">
+                                            <table [hover]="true" [responsive]="true" [striped]="true" align="middle"
+                                                cTable class="mb-0 border" dir="rtl">
+                                                <thead class="text-nowrap text-truncate">
+                                                    <tr>
+                                                        <th class="bg-body-tertiary text-center"></th>
+                                                        <th class="bg-body-tertiary">ت</th>
+                                                        <th class="bg-body-tertiary">نوع الإجراء</th>
+                                                        <th class="bg-body-tertiary">الوقت</th>
+                                                        <th class="bg-body-tertiary">الحالة</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="table-body">
+                                                    <tr *ngFor="let action of getActionsByAccount(accountId); let i = index"
+                                                        (click)="onActionSelect(accountId, action.id)"
+                                                        [class.selected-row]="selectedActionIdMap[accountId] === action.id"
+                                                        style="cursor: pointer;">
+                                                        <td class="text-center">
+                                                            <mat-checkbox
+                                                                [checked]="selectedActionIdMap[accountId] === action.id"
+                                                                (click)="$event.stopPropagation()"
+                                                                (change)="onActionSelect(accountId, action.id)">
+                                                            </mat-checkbox>
+                                                        </td>
+                                                        <td>{{ Helper.enToAr(i + 1) }}</td>
+                                                        <td>{{ formatAction(action.action) }}</td>
+                                                        <td>{{ formatTime(action.timestamp) }}</td>
+                                                        <td><span>{{ formatStatus(action.status) }}</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </ng-container>
+                                    </c-tab-panel>
+
+                                </c-tabs>
+                            </div>
+                        </ng-template>
+
+                    </c-accordion-item>
+                </c-accordion>
+
+
+                <!-- Paginator -->
+                <app-paginator [data]="devices" (paginatedData)="paginatedDevices = $event"></app-paginator>
+
+            </c-card-body>
+        </c-card>
+    </c-col>
+
+    <c-col *ngIf="!isScheduled && actions.length > 0 && screenshotUrl" lg="4"
+        class="h-100 d-flex align-items-center justify-content-center">
+        <div class="smartphone">
+            <!-- Screen -->
+            <div class="screen">
+                <img *ngIf="screenshotUrl" [src]="screenshotUrl" class="screenshot-image" alt="screenshot">
+            </div>
+        </div>
+    </c-col>
+</c-row>

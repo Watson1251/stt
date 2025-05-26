@@ -1,0 +1,492 @@
+<c-row class="h-100 align-items-center main-container">
+    <c-col *ngIf="devices.length > 0" class="h-100 d-flex flex-column">
+        <c-card [cBorder]="{top: {color: 'info', width: 3}}" [textColor]="'black'" class="mb-3 flex-grow-1">
+            <c-card-header class="card-header-title">جدولة التغريدات</c-card-header>
+            <c-card-body>
+
+                <table [hover]="true" [responsive]="true" [striped]="false" align="middle" cTable class="mb-0 border">
+                    <thead class="text-nowrap text-truncate">
+                        <tr class="align-middle">
+                            <th class="bg-body-tertiary text-center index-column">ت</th>
+                            <th (click)="sortBy('device')" class="bg-body-tertiary device-column">الجهاز</th>
+                            <th class="bg-body-tertiary text-center index-column">
+                                <mat-checkbox (change)="toggleSelectAll($event)" [checked]="headerCheckboxChecked"
+                                    [indeterminate]="headerCheckboxIndeterminate">
+                                </mat-checkbox>
+                            </th>
+                            <th (click)="sortBy('account')" class="bg-body-tertiary account-column">الحساب</th>
+                            <th (click)="sortBy('actionType')" class="bg-body-tertiary type-column">نوع الإجراء</th>
+                            <th (click)="sortBy('tweet')" class="bg-body-tertiary tweet-column">التغريدة</th>
+                            <th (click)="sortBy('datetime')" class="bg-body-tertiary">التاريخ والوقت</th>
+                        </tr>
+
+                        <tr class="align-middle second-header-row">
+                            <th>
+                                <div class="contaier-fluid d-flex flex-column align-items-center ">
+                                    <button class="toggle-visibility-btn" (click)="toggleDisconnectedVisibility()"
+                                        [title]="hideDisconnected ? 'إظهار الأجهزة المفصولة' : 'إخفاء الأجهزة المفصولة'">
+                                        <mat-icon>{{ hideDisconnected ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                    </button>
+                                </div>
+                            </th>
+
+                            <th>
+                                <div class="filter-container">
+                                    <input type="text" [(ngModel)]="deviceFilter" (input)="onDeviceFilterInput()"
+                                        placeholder="بحث بالجهاز" class="filter-input" />
+                                    <button *ngIf="deviceFilter" class="clear-filter-btn"
+                                        (click)="clearDeviceFilter()">✕</button>
+                                </div>
+                            </th>
+
+                            <th>
+                                <div class="contaier-fluid d-flex flex-column align-items-center">
+                                    <button class="toggle-selected-btn" (click)="toggleShowSelected()"
+                                        [disabled]="!canShowOnlySelected()"
+                                        [title]="showOnlySelected ? 'عرض الكل' : 'عرض المحدد فقط'">
+                                        <mat-icon>{{ showOnlySelected ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                    </button>
+                                </div>
+                            </th>
+
+                            <th>
+                                <div class="filter-container">
+                                    <input type="text" [(ngModel)]="accountFilter" (input)="onAccountFilterInput()"
+                                        placeholder="بحث بالحساب" class="filter-input" />
+                                    <button *ngIf="accountFilter" class="clear-filter-btn"
+                                        (click)="clearAccountFilter()">✕</button>
+                                </div>
+                            </th>
+
+                            <th>
+                                <div class="contaier-fluid ">
+                                    <!-- Universal Action Type -->
+                                    <form [formGroup]="universalForm">
+                                        <mat-form-field appearance="outline" class="action-type-select type-width">
+                                            <mat-select formControlName="actionType"
+                                                (selectionChange)="onUniversalActionTypeChange($event.value)"
+                                                placeholder="نوع الإجراء">
+
+                                                <!-- Trigger with icon and label -->
+                                                <mat-select-trigger>
+                                                    <ng-container [ngSwitch]="universalForm.get('actionType')?.value">
+                                                        <span *ngSwitchCase="''">
+                                                            اختر
+                                                        </span>
+                                                        <span *ngSwitchCase="'tweet'">
+                                                            <mat-icon class="me-2">chat</mat-icon> إرسال تغريدة
+                                                        </span>
+                                                        <span *ngSwitchCase="'reply'">
+                                                            <mat-icon class="me-2">reply</mat-icon> الرد على تغريدة
+                                                        </span>
+                                                        <span *ngSwitchCase="'repost'">
+                                                            <mat-icon class="me-2">repeat</mat-icon> إعادة تغريد
+                                                        </span>
+                                                        <span *ngSwitchCase="'like'">
+                                                            <mat-icon class="me-2">thumb_up</mat-icon> الإعجاب بتغريدة
+                                                        </span>
+                                                        <span *ngSwitchDefault>
+                                                            <!-- Optional placeholder -->
+                                                        </span>
+                                                    </ng-container>
+                                                </mat-select-trigger>
+
+                                                <mat-option value="">اختر</mat-option>
+
+                                                <!-- Clear Selection Option -->
+                                                <mat-option value="tweet">
+                                                    <mat-icon class="me-2">chat</mat-icon>
+                                                    إرسال تغريدة
+                                                </mat-option>
+                                                <mat-option value="reply">
+                                                    <mat-icon class="me-2">reply</mat-icon>
+                                                    الرد على تغريدة
+                                                </mat-option>
+                                                <mat-option value="repost">
+                                                    <mat-icon class="me-2">repeat</mat-icon>
+                                                    إعادة تغريد
+                                                </mat-option>
+                                                <mat-option value="like">
+                                                    <mat-icon class="me-2">thumb_up</mat-icon>
+                                                    الإعجاب بتغريدة
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </form>
+                                </div>
+                            </th>
+
+                            <th>
+                                <!-- Universal Tweet Fields -->
+                                <form [formGroup]="universalForm"
+                                    *ngIf="['tweet', 'reply'].includes(universalForm.get('actionType')?.value)">
+                                    <div class="selection-row full-width">
+                                        <mat-form-field appearance="outline" class="category-select fixed-width">
+                                            <mat-select formControlName="category"
+                                                (selectionChange)="onUniversalCategoryChange($event.value)"
+                                                placeholder="الفئة">
+                                                <mat-option *ngFor="let category of categories" [value]="category.id"
+                                                    [disabled]="!hasTweets(category.id)">
+                                                    {{ category.category }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fixed-width">
+                                            <input matInput formControlName="hashtag" placeholder="وسم (اختياري)"
+                                                (blur)="onUniversalHashtagChange()" />
+                                        </mat-form-field>
+                                    </div>
+                                </form>
+
+                                <!-- Target Tweet ID field for reply/repost/like -->
+                                <form [formGroup]="universalForm"
+                                    *ngIf="['reply','repost','like'].includes(universalForm.get('actionType')?.value)">
+                                    <div class="tweet-container"
+                                        [ngClass]="{'tweet-container-padding': ['tweet', 'reply'].includes(universalForm.get('actionType')?.value)}">
+                                        <mat-form-field appearance="outline" class="full-width-field">
+                                            <input matInput formControlName="targetTweetId"
+                                                placeholder="معرّف التغريدة المستهدفة"
+                                                (blur)="onUniversalTargetTweetIdChange()" />
+                                        </mat-form-field>
+                                    </div>
+                                </form>
+
+                                <div *ngIf="['tweet', 'reply'].includes(universalForm.get('actionType')?.value)"
+                                    [ngClass]="{'tweet-container-padding': ['tweet', 'reply'].includes(universalForm.get('actionType')?.value)}"
+                                    class="tweet-container full-width-field">
+                                    <!-- Upload Zone (only when there are no uploaded media) -->
+                                    <label class="media-dropzone" *ngIf="universalMedia.length === 0">
+                                        <input id="universal-media" type="file" multiple hidden accept="image/*,video/*"
+                                            (change)="onUniversalMediaSelected($event)" />
+                                        <span>حدد مكتبة الوسائط المتعددة</span>
+                                    </label>
+
+                                    <!-- Actions + Summary (shown when media is uploaded) -->
+                                    <div class="universal-media-actions" *ngIf="universalMedia.length > 0">
+
+                                        <!-- STATS TEXT centered below the icons -->
+                                        <div class="media-summary"
+                                            *ngIf="universalMedia.length > 0 || getSelectedAccountsCount() > 0">
+                                            {{ getArabicMediaLabel('image') }}{{ getMediaCount('image') > 0 &&
+                                            getMediaCount('video') > 0 ? '، ' : '' }}{{ getArabicMediaLabel('video') }}
+                                            —
+                                            {{ getArabicAccountLabel() }}
+                                        </div>
+
+                                        <div class="media-actions">
+                                            <!-- Add More Media -->
+                                            <label class="action-wrapper">
+                                                <input #universalFileInput type="file" hidden multiple
+                                                    accept="image/*,video/*"
+                                                    (change)="onUniversalMediaSelected($event)" />
+                                                <button mat-button type="button" (click)="universalFileInput.click()">
+                                                    <mat-icon>attach_file</mat-icon>
+                                                </button>
+                                                <div class="action-label">إضافة وسائط</div>
+                                            </label>
+
+                                            <!-- Shuffle -->
+                                            <div class="action-wrapper">
+                                                <button mat-icon-button (click)="distributeUniversalMedia()">
+                                                    <mat-icon>shuffle</mat-icon>
+                                                </button>
+                                                <div class="action-label">توزيع الوسائط</div>
+                                            </div>
+
+                                            <!-- Clear -->
+                                            <div class="action-wrapper">
+                                                <button mat-icon-button (click)="clearUniversalMedia()">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                                <div class="action-label">مسح الكل</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </th>
+
+                            <!-- datetime -->
+                            <th>
+                                <form [formGroup]="universalForm" class="d-flex gap-2 align-items-center">
+                                    <mat-form-field appearance="outline" class="full-width-field">
+                                        <input matInput [owlDateTimeTrigger]="rangePicker" [min]="now"
+                                            [owlDateTime]="rangePicker" [selectMode]="'range'"
+                                            placeholder="حدد الفترة الزمنية" formControlName="range" [readonly]="true">
+                                        <owl-date-time #rangePicker pickerMode="dialog"></owl-date-time>
+                                    </mat-form-field>
+
+                                    <button class="clear-datetime" mat-icon-button (click)="clearDatetimeRange()"
+                                        *ngIf="universalForm.get('range')?.value">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </form>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="table-body" dir="rtl">
+                        <ng-container *ngFor="let device of paginatedDevices; let i = index;">
+                            <ng-container *ngFor="let accountId of device.accounts; let accountIndex = index;">
+                                <tr [ngClass]="{
+                                    'disconnected-device': !device.isConnected,
+                                    'device-row-start': accountIndex === 0,
+                                    'unselected-row': !getForm(device.id, accountId)?.get('isSelected')?.value
+                                  }">
+
+                                    <!-- Counter Column -->
+                                    <td class="text-center index-column" *ngIf="accountIndex === 0"
+                                        [attr.rowspan]="device.accounts.length">
+                                        {{ i + 1 }}
+                                    </td>
+
+                                    <!-- Device Column -->
+                                    <td *ngIf="accountIndex === 0" class="device-column"
+                                        [attr.rowspan]="device.accounts.length">
+                                        <div class="device-name-container">
+                                            <mat-icon class="device-icon">smartphone</mat-icon>
+                                            <span class="status-dot" [ngClass]="getStatusClass(device)"></span>
+                                            <div>
+                                                <div>{{ device.name || "-" }}</div>
+                                                <div class="small text-body-secondary text-nowrap">{{ device.serial }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <form [formGroup]="getForm(device.id, accountId)">
+                                            <mat-checkbox formControlName="isSelected"
+                                                (change)="onCheckboxChange(device.id, accountId)">
+                                            </mat-checkbox>
+                                        </form>
+                                    </td>
+
+                                    <!-- Account Column -->
+                                    <td>
+                                        <ng-container *ngIf="getAccountById(accountId) as account"
+                                            class="container-fluid">
+                                            <mat-chip-set class="accounts-chip-list">
+                                                <mat-chip class="account-chip"
+                                                    (mouseenter)="toggleAccountView(account, true)"
+                                                    (mouseleave)="toggleAccountView(account, false)">
+                                                    <mat-icon *ngIf="account?.showFullName"
+                                                        matChipAvatar>person</mat-icon>
+                                                    <img *ngIf="!account?.showFullName" matChipAvatar
+                                                        [src]="'assets/x-logo.png'" alt="X Logo" class="chip-avatar" />
+                                                    {{ account.showFullName ? account.name : account.username + "@" }}
+                                                </mat-chip>
+                                            </mat-chip-set>
+                                        </ng-container>
+                                    </td>
+
+                                    <td class="action-type-container">
+                                        <!-- Action Type Selection -->
+                                        <form [formGroup]="getForm(device.id, accountId)">
+                                            <mat-form-field appearance="outline" class="action-type-select type-width"
+                                                [ngClass]="{'mat-select-disabled': getForm(device.id, accountId).get('actionType')?.disabled}">
+                                                <mat-label>اختر نوع الإجراء</mat-label>
+                                                <mat-select formControlName="actionType">
+
+
+                                                    <!-- Trigger with icon and label -->
+                                                    <mat-select-trigger>
+                                                        <ng-container
+                                                            [ngSwitch]="getForm(device.id, accountId).get('actionType')?.value">
+                                                            <span *ngSwitchCase="'tweet'">
+                                                                <mat-icon class="me-2">chat</mat-icon> إرسال تغريدة
+                                                            </span>
+                                                            <span *ngSwitchCase="'reply'">
+                                                                <mat-icon class="me-2">reply</mat-icon> الرد على تغريدة
+                                                            </span>
+                                                            <span *ngSwitchCase="'repost'">
+                                                                <mat-icon class="me-2">repeat</mat-icon> إعادة تغريد
+                                                            </span>
+                                                            <span *ngSwitchCase="'like'">
+                                                                <mat-icon class="me-2">thumb_up</mat-icon> الإعجاب
+                                                                بتغريدة
+                                                            </span>
+                                                        </ng-container>
+                                                    </mat-select-trigger>
+
+
+                                                    <!-- Clear Selection Option -->
+                                                    <mat-option value="tweet">
+                                                        <mat-icon class="me-2">chat</mat-icon>
+                                                        إرسال تغريدة
+                                                    </mat-option>
+                                                    <mat-option value="reply">
+                                                        <mat-icon class="me-2">reply</mat-icon>
+                                                        الرد على تغريدة
+                                                    </mat-option>
+                                                    <mat-option value="repost">
+                                                        <mat-icon class="me-2">repeat</mat-icon>
+                                                        إعادة تغريد
+                                                    </mat-option>
+                                                    <mat-option value="like">
+                                                        <mat-icon class="me-2">thumb_up</mat-icon>
+                                                        الإعجاب بتغريدة
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </form>
+                                    </td>
+
+                                    <!-- Tweet Column -->
+                                    <td>
+                                        <div class="tweet-selection-container">
+                                            <form [formGroup]="getForm(device.id, accountId)">
+                                                <div class="selection-row full-width"
+                                                    *ngIf="getForm(device.id, accountId).get('actionType')?.value === 'tweet' || 
+                                                                                      getForm(device.id, accountId).get('actionType')?.value === 'reply'">
+                                                    <!-- Category Selection -->
+                                                    <mat-form-field appearance="outline"
+                                                        [ngClass]="{'mat-select-disabled': getForm(device.id, accountId).get('category')?.disabled}"
+                                                        class="category-select fixed-width">
+                                                        <mat-label>اختر الفئة</mat-label>
+                                                        <mat-select
+                                                            [disabled]="getForm(device.id, accountId).get('isDisabled')?.value"
+                                                            formControlName="category"
+                                                            (selectionChange)="onCategoryChange($event.value, device.id, accountId)">
+                                                            <mat-option *ngFor="let category of categories"
+                                                                [value]="category.id"
+                                                                [disabled]="!hasTweets(category.id)">
+                                                                {{ category.category }}
+                                                            </mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+
+
+                                                    <!-- Hashtag Input -->
+                                                    <mat-form-field appearance="outline"
+                                                        [ngClass]="{'mat-input-disabled': getForm(device.id, accountId).get('hashtag')?.disabled}"
+                                                        class="hashtag-input fixed-width">
+                                                        <mat-label>وسم (اختياري)</mat-label>
+                                                        <input matInput formControlName="hashtag">
+                                                    </mat-form-field>
+                                                </div>
+
+                                                <!-- Tweet & Refresh Row (Only Show After Category Selection) -->
+                                                <div class="tweet-container full-row"
+                                                    [ngClass]="{'tweet-container-padding': ['tweet', 'reply'].includes(getForm(device.id, accountId).get('actionType')?.value)}"
+                                                    *ngIf="getForm(device.id, accountId).get('category')?.value && (getForm(device.id, accountId).get('actionType')?.value === 'tweet' || 
+                                                    getForm(device.id, accountId).get('actionType')?.value === 'reply')">
+                                                    <mat-form-field appearance="outline" class="tweet-textarea">
+                                                        <mat-label>التغريدة</mat-label>
+                                                        <textarea matInput formControlName="tweet"
+                                                            (blur)="handleTweetInput(device.id, accountId)"></textarea>
+                                                    </mat-form-field>
+
+                                                    <button mat-icon-button class="floating-refresh"
+                                                        [disabled]="getForm(device.id, accountId).get('isDisabled')?.value"
+                                                        (click)="refreshTweet(device.id, accountId)">
+                                                        <mat-icon>refresh</mat-icon>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Target Tweet ID (For "reply", "repost", and "like") -->
+                                                <div class="tweet-container"
+                                                    [ngClass]="{'tweet-container-padding': ['tweet', 'reply'].includes(getForm(device.id, accountId).get('actionType')?.value)}">
+                                                    <mat-form-field appearance="outline" class="full-width-field"
+                                                        [ngClass]="{'mat-textarea-disabled': getForm(device.id, accountId).get('targetTweetId')?.disabled}"
+                                                        *ngIf="getForm(device.id, accountId).get('actionType')?.value === 'reply' || 
+                                                               getForm(device.id, accountId).get('actionType')?.value === 'repost' || 
+                                                               getForm(device.id, accountId).get('actionType')?.value === 'like'">
+                                                        <mat-label>معرّف التغريدة المستهدفة</mat-label>
+                                                        <input matInput formControlName="targetTweetId">
+                                                    </mat-form-field>
+                                                </div>
+
+                                                <div class="tweet-container full-width-field"
+                                                    [ngClass]="{'tweet-container-padding': ['tweet', 'reply'].includes(getForm(device.id, accountId).get('actionType')?.value)}"
+                                                    *ngIf="['tweet', 'reply'].includes(getForm(device.id, accountId)?.get('actionType')?.value)">
+                                                    <label *ngIf="!getForm(device.id, accountId)?.get('media')?.value"
+                                                        class="media-dropzone"
+                                                        for="{{ getFormKey(device.id, accountId) }}-media">
+                                                        <input type="file" accept="image/*,video/*" hidden
+                                                            id="{{ getFormKey(device.id, accountId) }}-media"
+                                                            (change)="onMediaSelected($event, device.id, accountId)" />
+                                                        <span>أضف صورة أو فيديو</span>
+                                                    </label>
+
+                                                    <!-- Preview -->
+                                                    <div class="media-preview-wrapper"
+                                                        *ngIf="getForm(device.id, accountId)?.get('media')?.value">
+                                                        <!-- Buttons -->
+                                                        <div class="media-controls">
+                                                            <!-- Clear (remove media) -->
+                                                            <button type="button" class="icon-btn clear"
+                                                                (click)="clearMedia(device.id, accountId)">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- File Input for Replace -->
+                                                        <input type="file" accept="image/*,video/*" hidden
+                                                            id="{{ getFormKey(device.id, accountId) }}-media"
+                                                            (change)="onMediaSelected($event, device.id, accountId)" />
+
+                                                        <!-- Preview -->
+                                                        <ng-container
+                                                            [ngSwitch]="getMediaType(getForm(device.id, accountId)?.get('media')?.value)">
+                                                            <img *ngSwitchCase="'image'"
+                                                                [src]="getMediaPreview(getForm(device.id, accountId)?.get('media')?.value)"
+                                                                class="media-preview-content" />
+                                                            <video *ngSwitchCase="'video'" controls
+                                                                class="media-preview-content">
+                                                                <source
+                                                                    [src]="getMediaPreview(getForm(device.id, accountId)?.get('media')?.value)" />
+                                                            </video>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+
+                                    <td class="datetime-cell">
+                                        <form [formGroup]="getForm(device.id, accountId)">
+                                            <!-- Hidden input for OwlDateTime -->
+                                            <input matInput [min]="now" [owlDateTimeTrigger]="dt" [owlDateTime]="dt"
+                                                formControlName="datetime" class="d-none" />
+
+                                            <owl-date-time #dt pickerMode="dialog" [pickerType]="'both'"
+                                                (afterConfirm)="getForm(device.id, accountId).get('datetime')?.setValue($event)"></owl-date-time>
+
+                                            <!-- Wrap icon and preview in one flex row -->
+                                            <div class="datetime-row"
+                                                *ngIf="getForm(device.id, accountId).get('isSelected')?.value">
+                                                <button mat-icon-button type="button" (click)="dt.open()">
+                                                    <mat-icon>event</mat-icon>
+                                                </button>
+                                                <div class="datetime-preview"
+                                                    *ngIf="getForm(device.id, accountId).get('datetime')?.value">
+                                                    {{ getLocalizedArabicDatetime(getForm(device.id,
+                                                    accountId).get('datetime')?.value) }}
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+
+
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </tbody>
+                </table>
+
+                <!-- Paginator -->
+                <!-- <app-paginator [data]="devices" (paginatedData)="paginatedDevices = $event"></app-paginator> -->
+
+            </c-card-body>
+        </c-card>
+
+        <!-- Fixed Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-success ms-2" (click)="onSubmit()">جدولة</button>
+            <button class="btn btn-secondary" (click)="onCancel()">إلغاء</button>
+        </div>
+    </c-col>
+</c-row>

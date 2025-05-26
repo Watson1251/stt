@@ -1,0 +1,28 @@
+# --- Builder Stage (optional if you have build tools or TS) ---
+FROM node:18-slim AS builder
+
+WORKDIR /photo-server
+
+COPY engines/photo-server/package*.json ./
+RUN npm install
+
+COPY engines/photo-server .
+COPY engines/utils /photo-server/utils
+
+# Install winston (if it's not already in package.json)
+RUN npm install winston
+
+# --- Runtime Stage ---
+FROM node:18-slim
+
+WORKDIR /photo-server
+
+COPY --from=builder /photo-server /photo-server
+
+RUN npm install -g pm2
+
+EXPOSE 3000
+
+ENV SERVICE_NAME=photo-server
+
+CMD ["/bin/bash"]

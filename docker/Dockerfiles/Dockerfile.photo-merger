@@ -1,0 +1,27 @@
+# --- Base for dependencies ---
+FROM python:3.10-slim AS base
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx && \
+    pip install --no-cache-dir uvicorn fastapi pika pyinotify
+
+COPY engines/photo-merger/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# --- Development with live reload ---
+FROM base AS dev
+
+COPY engines/photo-merger /app
+
+CMD ["/bin/bash"]
+
+# --- Production ---
+FROM base AS prod
+
+COPY engines/photo-merger /app
+COPY engines/utils /app/utils
+
+CMD ["/bin/bash"]
