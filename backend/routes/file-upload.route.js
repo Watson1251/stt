@@ -20,7 +20,9 @@ const overrideUploadConfig = (req, res, next) => {
 };
 
 
-router.post("/create", checkAuth, overrideUploadConfig, uploadMiddleware, FileUploadController.createFile);
-router.get("/retrieve/:id", checkAuth, FileUploadController.retrieveFile);
+router.post("/", checkAuth, overrideUploadConfig, uploadMiddleware, FileUploadController.createFile);
+router.put("/:id", checkAuth, FileUploadController.updateFile);
+router.get("/:id", checkAuth, FileUploadController.retrieveFile);
+router.delete("/:id", checkAuth, FileUploadController.deleteFile);
 
 module.exports = router;

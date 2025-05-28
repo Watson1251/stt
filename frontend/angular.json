@@ -1,12 +1,9 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "cli": {
-    "analytics": false
-  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "coreui-free-angular-admin-template": {
+    "Steex": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -21,52 +18,75 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../backend/angular",
+            "outputPath": "dist/steex",
             "index": "src/index.html",
-            "browser": "src/main.ts",
+            "main": "src/main.ts",
             "polyfills": [
-              "@angular/localize/init",
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "preserveSymlinks": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/scss/styles.scss",
-              "src/assets/local_styles.css"
+              "node_modules/prismjs/themes/prism.css",
+              "node_modules/flatpickr/dist/flatpickr.css",
+              "node_modules/@ctrl/ngx-emoji-mart/picker.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css",
+              "node_modules/ngx-ui-switch/ui-switch.component.css",
+              "node_modules/slick-carousel/slick/slick.scss",
+              "node_modules/slick-carousel/slick/slick-theme.scss",
+              "node_modules/ngx-spinner/animations/ball-scale-multiple.css",
+              "src/assets/scss/bootstrap.scss",
+              "src/assets/scss/app.scss",
+              "src/assets/scss/icons.scss",
+              "src/styles.scss"
             ],
-            "scripts": [],
-            "allowedCommonJsDependencies": [],
-            "stylePreprocessorOptions": {
-              "sass": {
-                "silenceDeprecations": []
-              }
-            }
+            "scripts": [
+              "node_modules/prismjs/prism.js",
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/slick-carousel/slick/slick.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "apexcharts",
+              "ev-emitter/ev-emitter",
+              "can-use-dom",
+              "moment",
+              "@ckeditor/ckeditor5-build-classic",
+              "lottie-web",
+              "sweetalert2",
+              "polylabel",
+              "dropzone",
+              "prismjs"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "6mb",
+                  "maximumWarning": "8mb",
                   "maximumError": "8mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kb",
-                  "maximumError": "8kb"
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
+              "buildOptimizer": false,
               "optimization": false,
+              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -78,10 +98,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "coreui-free-angular-admin-template:build:production"
+              "browserTarget": "Steex:build:production"
             },
             "development": {
-              "buildTarget": "coreui-free-angular-admin-template:build:development"
+              "browserTarget": "Steex:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -89,7 +109,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "coreui-free-angular-admin-template:build"
+            "browserTarget": "Steex:build"
           }
         },
         "test": {
@@ -100,19 +120,21 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/scss/styles.scss"
+              "src/styles.scss"
             ],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "61ed7637-4a3d-4197-aa19-1c19109b7727"
   }
 }

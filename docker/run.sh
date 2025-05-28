@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set default service name
-DEFAULT_SERVICE="photo-server"
+DEFAULT_SERVICE="frontend-stt"
 
 # Check if a service is passed as an argument, otherwise use the default
 SERVICE="${1:-$DEFAULT_SERVICE}"

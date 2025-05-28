@@ -10,9 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-
-# profiling files
-chrome-profiler-events*.json
+package-lock.json
 
 # IDEs and editors
 .idea/
@@ -32,7 +30,6 @@ chrome-profiler-events*.json
 .history/*
 
 # Miscellaneous
-.npmrc
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -44,5 +41,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-.angular

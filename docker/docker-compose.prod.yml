@@ -1,4 +1,16 @@
 services:
+
+  frontend-stt:
+    container_name: frontend-stt
+    build:
+      context: ..
+      dockerfile: docker/Dockerfiles/Dockerfile.frontend.prod
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    command: [ "nginx", "-g", "daemon off;" ]
+
   backend-stt:
     ports:
       - "3000:3000"
