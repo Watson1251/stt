@@ -6,7 +6,7 @@ if [[ "$1" == "--prod" ]]; then
     shift
 fi
 
-FILES="-f docker-compose.yml -f docker-compose.${MODE}.yml"
+FILES="-f compose/docker-compose.yml -f compose/docker-compose.${MODE}.yml"
 
 if [ "$#" -eq 0 ]; then
     echo "No services specified. Restarting all services in $MODE mode."

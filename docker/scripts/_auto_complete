@@ -1,0 +1,86 @@
+_docker_scripts_completion() {
+    local cur prev script subcmd mode services
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    script="${COMP_WORDS[0]}"
+    local global_flags="--prod"
+
+    # Absolute project root (assumes this script lives in ./scripts/_auto_complete)
+    local project_root="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+    local compose_dir="${project_root}/compose"
+
+    # Handle master.sh as main entry point
+    if [[ "$(basename "$script")" == "master.sh" ]]; then
+        # First arg → complete subcommands
+        if [[ $COMP_CWORD -eq 1 ]]; then
+            local cmds=$(cd "${project_root}/scripts" && for f in *.sh; do basename "$f" .sh; done)
+            COMPREPLY=( $(compgen -W "${cmds} ${global_flags}" -- "$cur") )
+            return 0
+        fi
+
+        subcmd="${COMP_WORDS[1]}"
+
+        if [[ "$cur" == --* ]]; then
+            COMPREPLY=( $(compgen -W "${global_flags}" -- "$cur") )
+            return 0
+        fi
+
+        # Determine mode
+        mode="dev"
+        for word in "${COMP_WORDS[@]}"; do
+            [[ "$word" == "--prod" ]] && mode="prod"
+        done
+
+        case "$subcmd" in
+            build|up|down|restart|logs|run)
+                services=$(docker compose \
+                    -f "${compose_dir}/docker-compose.yml" \
+                    -f "${compose_dir}/docker-compose.${mode}.yml" \
+                    config --services 2>/dev/null)
+
+                [[ -n "$services" ]] && COMPREPLY=( $(compgen -W "${services} ${global_flags}" -- "$cur") )
+                ;;
+        esac
+        return 0
+    fi
+
+    # Handle direct calls like ./scripts/up.sh
+    subcmd="$(basename "$script" .sh)"
+    mode="dev"
+    for word in "${COMP_WORDS[@]}"; do
+        [[ "$word" == "--prod" ]] && mode="prod"
+    done
+
+    case "$subcmd" in
+        build|up|down|restart|logs|run)
+            services=$(docker compose \
+                -f "${compose_dir}/docker-compose.yml" \
+                -f "${compose_dir}/docker-compose.${mode}.yml" \
+                config --services 2>/dev/null)
+
+            [[ -n "$services" ]] && COMPREPLY=( $(compgen -W "${services} ${global_flags}" -- "$cur") )
+            ;;
+    esac
+}
+
+complete -F _docker_scripts_completion ./build.sh
+echo "[!] build.sh"
+
+complete -F _docker_scripts_completion ./up.sh
+echo "[!] up.sh"
+
+complete -F _docker_scripts_completion ./down.sh
+echo "[!] down.sh"
+
+complete -F _docker_scripts_completion ./restart.sh
+echo "[!] restart.sh"
+
+complete -F _docker_scripts_completion ./logs.sh
+echo "[!] logs.sh"
+
+complete -F _docker_scripts_completion ./run.sh
+echo "[!] run.sh"
+
+complete -F _docker_scripts_completion ./master.sh
+echo "[!] master.sh"
