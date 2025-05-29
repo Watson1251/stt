@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { EventService } from '../core/services/event.service';
 import { RootReducerState } from '../store';
 import { Store } from '@ngrx/store';
-import { LayoutState } from '../store/layouts/layout-reducers';
+import { LayoutState } from '../../app/store/layouts/layout-reducers';
 @Component({
-  selector: 'app-layout',
+  selector: 'app-special-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })
-export class LayoutComponent {
+export class SpecialLayoutComponent {
 
   // layout related config
   layoutType!: string;

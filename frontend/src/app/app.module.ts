@@ -22,7 +22,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 // component
 import { AppComponent } from './app.component';
 import { AuthlayoutComponent } from './authlayout/authlayout.component';
-import { environment } from 'src/environments/environment';
+import { environment } from '../environments/environment';
 import { AnalyticsEffects } from './store/Analytics/analytics.effects';
 import { rootReducer } from './store';
 import { fakebackendInterceptor } from './core/helpers/fake-backend';
@@ -48,6 +48,8 @@ import { InstructorEffects } from './store/Learning-instructor/instructor.effect
 import { CustomerEffects } from './store/Customer/customer.effects';
 import { studentsEffects } from './store/students/student.effcts';
 import { CourcesEffects } from './store/Learning-cources/cources.effect';
+import { ComponentsModule } from './components/components.module';
+import { SpecialLayoutsModule } from './special-layouts/layouts.module';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -106,10 +108,12 @@ if (environment.defaultauth === 'firebase') {
     BrowserAnimationsModule,
     AppRoutingModule,
     LayoutsModule,
+    SpecialLayoutsModule,
     ToastrModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    ComponentsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
