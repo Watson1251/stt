@@ -3,12 +3,12 @@ services:
   frontend-stt:
     container_name: frontend-stt
     build:
-      context: ..
+      context: ../../
       dockerfile: docker/Dockerfiles/Dockerfile.frontend.dev
     ports:
       - "4222:4200"
     volumes:
-      - ../frontend:/frontend
+      - ../../frontend/src:/frontend/src
     environment:
       - NODE_ENV=development
     command: npm start
@@ -17,6 +17,6 @@ services:
     ports:
       - "3005:3000"
     volumes:
-      - ../backend:/backend
-      - ../engines/utils:/backend/utils
+      - ../../backend:/backend
+      - ../../engines/utils:/backend/utils
     command: npx nodemon server.js

@@ -1,15 +1,17 @@
-# --- Builder Stage (optional if you have build tools or TS) ---
+# --- Builder Stage ---
 FROM node:18-slim AS builder
 
 WORKDIR /backend
 
-COPY backend/package*.json ./
+# Copy only package files first for caching
+COPY ./backend/package*.json ./
 RUN npm install
 
-COPY backend .
-COPY engines/utils /backend/utils
+# Copy backend source and utils
+COPY ./backend ./
+COPY ./engines/utils ./utils
 
-# Install winston (if it's not already in package.json)
+# Install winston if not declared in package.json
 RUN npm install winston
 
 # --- Runtime Stage ---
@@ -17,7 +19,7 @@ FROM node:18-slim
 
 WORKDIR /backend
 
-COPY --from=builder /backend /backend
+COPY --from=builder ./backend /backend
 
 RUN npm install -g pm2
 

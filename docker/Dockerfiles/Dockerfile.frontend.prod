@@ -1,22 +1,20 @@
-# Dockerfile.prod (Production-specific)
+# --- Build Stage ---
 FROM node:16 AS build
 
 WORKDIR /frontend
 
 # Install dependencies and build the app
-COPY ../frontend/package*.json ./
+COPY ./frontend/package*.json ./
 RUN npm install
-COPY ../frontend .
+COPY ./frontend ./
 RUN npm run build --prod
 
-# Use NGINX to serve the production build
+# --- Runtime Stage with NGINX ---
 FROM nginx:alpine AS final
 
-# Copy the build output from the build stage to NGINX's default directory
-COPY --from=build /frontend/dist /usr/share/nginx/html
+# Copy the build output to NGINX directory
+COPY --from=build ./frontend/dist /usr/share/nginx/html
 
-# Expose NGINX port
 EXPOSE 80
 
-# Start NGINX in the foreground
 CMD ["nginx", "-g", "daemon off;"]
