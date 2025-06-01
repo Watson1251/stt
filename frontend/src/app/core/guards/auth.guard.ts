@@ -15,6 +15,7 @@ export class AuthGuard  {
     ) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        return true; // for now, we allow all routes to be activated
         if (environment.defaultauth === 'firebase') {
             const currentUser = this.authenticationService.currentUser();
             if (currentUser) {
