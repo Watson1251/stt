@@ -2,9 +2,7 @@ services:
 
   frontend-stt:
     container_name: frontend-stt
-    build:
-      context: ../../
-      dockerfile: docker/Dockerfiles/Dockerfile.frontend.prod
+    image: frontend-stt:prod
     ports:
       - "80:80"
     environment:
@@ -12,6 +10,8 @@ services:
     command: [ "nginx", "-g", "daemon off;" ]
 
   backend-stt:
+    container_name: backend-stt
+    image: backend-stt:prod
     ports:
       - "3000:3000"
     command: node server.js
