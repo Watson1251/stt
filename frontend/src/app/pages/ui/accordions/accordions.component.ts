@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-accordions',
   templateUrl: './accordions.component.html',
-  styleUrls: ['./accordions.component.scss']
+  styleUrls: ['./accordions.component.scss'],
 })
 export class AccordionsComponent {
   isCollapsed = false;
@@ -16,15 +16,14 @@ export class AccordionsComponent {
   multiCollapseExample2 = false;
 
   breadCrumbItems!: Array<{}>;
-  isFirstOpen = true
-  ngOnInit() { 
+  isFirstOpen = true;
+  ngOnInit() {
     /**
      * BreadCrumb
      */
     this.breadCrumbItems = [
       { label: 'Base UI' },
-      { label: 'Accordions', active: true }
+      { label: 'Accordions', active: true },
     ];
   }
-  
 }

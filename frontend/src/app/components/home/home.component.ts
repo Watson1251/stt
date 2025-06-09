@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
+import { FileuploadService } from 'src/app/services/fileupload.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
+  isFirstOpen = true;
+  uploadedFiles: any[] = [];
 
-  files: File[] = [];
+  constructor(private fileuploadService: FileuploadService) {}
 
-  onSelect(event: any) {
-    console.log(event);
-    this.files.push(...event.addedFiles);
+  ngOnInit(): void {
+    this.fileuploadService.getAllFiles().subscribe({
+      next: (data) => {
+        this.uploadedFiles = data;
+        console.log('Fetched files:', this.uploadedFiles);
+      },
+      error: (err) => {
+        console.error('Error fetching files:', err);
+      },
+    });
   }
-
-  onRemove(event: any) {
-    console.log(event);
-    this.files.splice(this.files.indexOf(event), 1);
-  }
-
 }

@@ -1,0 +1,61 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title mb-0">إضافة ملفات</h4>
+  </div>
+
+  <div class="card-body">
+    <ngx-dropzone (change)="onSelect($event)" [accept]="acceptedTypes">
+      <ngx-dropzone-label *ngIf="uploadQueue.length === 0" class="box-label">
+        اسحب الملف أو انقر هُنا
+      </ngx-dropzone-label>
+
+      <div class="preview-wrapper" *ngFor="let f of uploadQueue">
+        <div class="preview-item">
+          <ngx-dropzone-image-preview
+            *ngIf="isImage(f)"
+            [file]="f.file"
+            [removable]="true"
+            (removed)="onRemove(f)"
+          ></ngx-dropzone-image-preview>
+
+          <ngx-dropzone-video-preview
+            *ngIf="isVideo(f)"
+            [file]="f.file"
+            [removable]="true"
+            (removed)="onRemove(f)"
+          ></ngx-dropzone-video-preview>
+
+          <div *ngIf="isAudio(f)" class="custom-preview">
+            <audio [src]="f.objectUrl" controls></audio>
+            <button
+              class="remove-btn"
+              (click)="onRemove(f); $event.stopPropagation()"
+            >
+              ✖
+            </button>
+          </div>
+
+          <ngx-dropzone-preview
+            *ngIf="!isImage(f) && !isVideo(f) && !isAudio(f)"
+            [removable]="true"
+            (removed)="onRemove(f)"
+          ></ngx-dropzone-preview>
+        </div>
+
+        <div class="preview-label">
+          <div class="file-name" dir="ltr">{{ f.file.name }}</div>
+
+          <div *ngIf="f.status === 'uploading'" class="upload-progress">
+            <small>{{ f.progress }}%</small>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="f.progress"></div>
+            </div>
+          </div>
+
+          <!-- <div *ngIf="f.status === 'done'" class="text-success">✔ تم الرفع</div> -->
+          <div *ngIf="f.status === 'error'" class="text-danger">✖ فشل</div>
+        </div>
+      </div>
+    </ngx-dropzone>
+  </div>
+</div>

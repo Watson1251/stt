@@ -9,6 +9,7 @@ export const environment = {
     storageBucket: '',
     messagingSenderId: '',
     appId: '',
-    measurementId: ''
-  }
+    measurementId: '',
+  },
+  apiUrl: 'http://localhost:3000/api',
 };

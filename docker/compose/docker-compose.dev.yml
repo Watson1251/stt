@@ -1,5 +1,4 @@
 services:
-
   frontend-stt:
     container_name: frontend-stt
     build:
@@ -15,7 +14,7 @@ services:
 
   backend-stt:
     ports:
-      - "3005:3000"
+      - "3000:3000"
     volumes:
       - ../../backend:/backend
       - ../../engines/utils:/backend/utils

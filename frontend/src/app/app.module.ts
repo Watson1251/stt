@@ -1,7 +1,11 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HttpClient,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // auth
 import { AngularFireModule } from '@angular/fire/compat';
@@ -50,6 +54,10 @@ import { studentsEffects } from './store/students/student.effcts';
 import { CourcesEffects } from './store/Learning-cources/cources.effect';
 import { ComponentsModule } from './components/components.module';
 import { SpecialLayoutsModule } from './special-layouts/layouts.module';
+import { AngularMaterialModule } from './angular-material.module';
+import { SharedModule } from './shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { UiModule } from './pages/ui/ui.module';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -61,18 +69,15 @@ if (environment.defaultauth === 'firebase') {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    AuthlayoutComponent
-  ],
+  declarations: [AppComponent, AuthlayoutComponent],
   imports: [
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
     }),
     StoreModule.forRoot(rootReducer),
     StoreDevtoolsModule.instrument({
@@ -100,7 +105,7 @@ if (environment.defaultauth === 'firebase') {
       CustomerEffects,
       studentsEffects,
       CourcesEffects,
-      InstructorEffects
+      InstructorEffects,
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     HttpClientModule,
@@ -113,13 +118,21 @@ if (environment.defaultauth === 'firebase') {
     FormsModule,
     ReactiveFormsModule,
     AngularFireAuthModule,
-    ComponentsModule
+    AngularMaterialModule,
+    ComponentsModule,
+    SharedModule,
+    CommonModule,
+    UiModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: fakebackendInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: fakebackendInterceptor,
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
