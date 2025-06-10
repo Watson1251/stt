@@ -1,5 +1,0 @@
-fastapi
-gunicorn
-pika
-pyinotify
-flask==2.3.3

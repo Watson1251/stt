@@ -1,0 +1,1 @@
+conda create -n stt -y python=3.10

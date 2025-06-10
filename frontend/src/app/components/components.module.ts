@@ -5,11 +5,11 @@ import { HomeComponent } from './home/home.component';
 import { ComponentsRoutingModule } from './components-routing.module';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
-import { DropfileComponent } from './dropfile/dropfile.component';
 import { UiModule } from '../pages/ui/ui.module';
 import { TranscriptionComponent } from './transcription/transcription.component';
 import { PaginatorComponent } from './paginator/paginator.component';
 import { AngularMaterialModule } from '../angular-material.module';
+import { DropfileComponent } from './dropfile/dropfile.component';
 
 @NgModule({
   declarations: [
@@ -26,4 +26,4 @@ import { AngularMaterialModule } from '../angular-material.module';
     AngularMaterialModule,
   ],
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

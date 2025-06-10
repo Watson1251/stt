@@ -49,7 +49,8 @@ export class PaginatorComponent {
         ) => {
           const start = page * pageSize + 1;
           const end = (page + 1) * pageSize;
-          return `${start.toString()} إلى ${end.toString()} من ${length.toString()}`;
+          const endLength = Math.min(end, length);
+          return `${start.toString()} إلى ${endLength.toString()} من ${length.toString()}`;
         };
 
         if (this.dataSource) {

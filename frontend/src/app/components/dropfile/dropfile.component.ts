@@ -16,7 +16,7 @@ export class DropfileComponent {
   constructor(
     private snackbarService: SnackbarService,
     private fileuploadService: FileuploadService
-  ) {}
+  ) { }
 
   onSelect(event: any) {
     const newFiles: File[] = event.addedFiles;
@@ -68,20 +68,20 @@ export class DropfileComponent {
         if (event.progress === 100) {
           next.status = 'done';
           next.responseData = event.result;
-          // this.snackbarService.openSnackBar(
-          //   `تم رفع ${next.file.name} بنجاح`,
-          //   'success'
-          // );
+          this.snackbarService.openSnackBar(
+            `تم رفع ${next.file.name} بنجاح`,
+            'success'
+          );
           this.isUploading = false;
           this.startNextUpload();
         }
       },
       error: () => {
         next.status = 'error';
-        // this.snackbarService.openSnackBar(
-        //   `فشل رفع الملف ${next.file.name}`,
-        //   'failure'
-        // );
+        this.snackbarService.openSnackBar(
+          `فشل رفع الملف ${next.file.name}`,
+          'failure'
+        );
         this.isUploading = false;
         this.startNextUpload();
       },

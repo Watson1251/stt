@@ -14,7 +14,7 @@ services:
 
   backend-stt:
     ports:
-      - "3000:3000"
+      - "3005:3000"
     volumes:
       - ../../backend:/backend
       - ../../engines/utils:/backend/utils
@@ -22,4 +22,4 @@ services:
 
   stt-rabbitmq:
     ports:
-      - "15673:15672"
+      - "15674:15672"

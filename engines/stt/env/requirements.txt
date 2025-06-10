@@ -1,0 +1,13 @@
+pydub
+pyannote.audio
+
+torch
+torchaudio
+transformers
+accelerate
+deepfilternet
+
+gunicorn
+flask
+imageio[ffmpeg]
+pydub

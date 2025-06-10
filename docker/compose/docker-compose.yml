@@ -25,8 +25,34 @@ services:
     environment:
       <<: *rabbitmq-env
       SERVICE_NAME: backend-stt
+      STT_ENGINE_URL: http://stt:8000/
       MONGODB_URL: mongodb://mongo:27017/stt_db
       UPLOAD_DIR: /db/media/
+
+  stt:
+    container_name: stt
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfiles/Dockerfile.stt
+    shm_size: "10gb"
+    volumes:
+      - ../../engines/stt:/stt
+      - ../../db/media:/db/media
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    command: >
+      bash -c "source /opt/conda/bin/activate stt &&
+               cd /stt &&
+               bash ./run.sh &&
+               tail -f /dev/null"
 
   mongo:
     image: mongo:6.0
@@ -47,7 +73,7 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
+      test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 30s
       timeout: 10s
       retries: 3
