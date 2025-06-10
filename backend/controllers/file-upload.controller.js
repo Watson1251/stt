@@ -1,6 +1,26 @@
 const FileUpload = require("../models/file-upload.model");
+const rabbitmq = require("../utils/rabbitmq");
+const logger = require("../utils/logger");
 const path = require("path");
 const fs = require("fs");
+
+exports.getFiles = (req, res, next) => {
+  const fileQuery = FileUpload.find();
+
+  fileQuery
+    .then((fetchedFiles) => {
+      res.status(200).json({
+        message: "Files fetched successfully!",
+        files: fetchedFiles,
+      });
+    })
+    .catch((error) => {
+      logger.log(error);
+      res.status(500).json({
+        message: "Fetching files failed!",
+      });
+    });
+};
 
 exports.getAllFiles = async (req, res) => {
   try {
@@ -11,25 +31,60 @@ exports.getAllFiles = async (req, res) => {
   }
 };
 
-exports.createFile = async (req, res) => {
+exports.createFile = async (req, res, next) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: "No files uploaded" });
   }
 
   try {
-    const saved = await Promise.all(
+    const savedFiles = await Promise.all(
       req.files.map((file) => {
         return new FileUpload({
           filename: file.originalname,
           filepath: file.path,
-          // uploadedBy: req.userData.userId,
+          mimetype: file.mimetype,
         }).save();
       })
     );
 
-    res.status(201).json({ message: "Files uploaded", files: saved });
+    req.savedFiles = savedFiles; // Pass to next handler
+    next(); // Go to queueFileForProcessing
   } catch (err) {
+    logger.error("❌ File save error:", err);
     res.status(500).json({ error: "Failed to save file metadata" });
+  }
+};
+
+exports.queueFileForProcessing = async (req, res, next) => {
+  try {
+    const files = req.savedFiles;
+    if (!files || files.length === 0) {
+      return next(); // Skip if no files are saved
+    }
+
+    for (const file of files) {
+      const isAudio = file.mimetype?.startsWith("audio/");
+      const queueName = isAudio
+        ? process.env.SPLIT_QUEUE || "split_queue"
+        : process.env.CONVERT_QUEUE || "convert_queue";
+
+      const payload = {
+        fileId: file._id.toString(),
+        filepath: file.filepath,
+      };
+
+      try {
+        await rabbitmq.publish(queueName, payload);
+        logger.info(`📤 Queued to ${queueName}:`, payload);
+      } catch (err) {
+        logger.error(`❌ Failed to queue to ${queueName}:`, err);
+      }
+    }
+
+    next(); // Continue to final response handler
+  } catch (err) {
+    logger.error("❌ Error in queueFileForProcessing:", err);
+    res.status(500).json({ error: "Failed to queue file(s) for processing" });
   }
 };
 

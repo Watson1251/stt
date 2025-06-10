@@ -1,4 +1,41 @@
 .box-label,
-.card-title {
+.card-title,
+.accordion-button {
   font-family: var(--arabic-font);
+}
+
+.filename-ltr {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+}
+
+.accordion-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.filename-container {
+  flex: 1;
+  display: flex;
+}
+
+.datetime-container {
+  flex: 1;
+  display: flex;
+  color: #6c757d !important; /* Bootstrap's default text-muted color */
+  font-weight: normal;
+}
+
+.action-buttons {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 20px;
+}
+
+.card-footer {
+  padding: 5px;
 }

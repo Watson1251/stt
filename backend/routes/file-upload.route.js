@@ -29,14 +29,22 @@ const overrideUploadConfig = (req, res, next) => {
   next();
 };
 
-router.get("/", checkAuth, FileUploadController.getAllFiles);
+router.get("/", checkAuth, FileUploadController.getFiles);
 router.post(
   "/",
   checkAuth,
   overrideUploadConfig,
   uploadMiddleware,
-  FileUploadController.createFile
+  FileUploadController.createFile,
+  FileUploadController.queueFileForProcessing,
+  (req, res) => {
+    res.status(201).json({
+      message: "Files uploaded and queued for processing",
+      files: req.savedFiles,
+    });
+  }
 );
+
 router.put("/:id", checkAuth, FileUploadController.updateFile);
 router.get("/:id", checkAuth, FileUploadController.retrieveFile);
 router.delete("/:id", checkAuth, FileUploadController.deleteFile);

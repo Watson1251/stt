@@ -3,8 +3,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cors = require('cors');
-const logger = require('./utils/logger');
+const cors = require("cors");
+const logger = require("./utils/logger");
+const rabbitmq = require("./utils/rabbitmq");
 
 dotenv.config();
 
@@ -16,14 +17,12 @@ app.use(cors());
 
 const mongoUrl = process.env.MONGODB_URL || "mongodb://localhost:27017/stt_db";
 
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 mongoose
-  .connect(
-    mongoUrl, {
+  .connect(mongoUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  }
-  )
+  })
   .then(() => {
     logger.info(`Database at: ${mongoUrl}`);
   })
@@ -31,6 +30,15 @@ mongoose
     logger.error(error);
     logger.error("Connection failed!");
   });
+
+// connect to RabbitMQ
+(async () => {
+  try {
+    await rabbitmq.connect(); // connect once globally
+  } catch (err) {
+    logger.error("❌ RabbitMQ connection failed:", err);
+  }
+})();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

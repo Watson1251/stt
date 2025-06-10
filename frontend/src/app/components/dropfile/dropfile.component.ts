@@ -45,7 +45,19 @@ export class DropfileComponent {
     if (this.isUploading) return;
 
     const next = this.uploadQueue.find((f) => f.status === 'pending');
-    if (!next) return;
+    if (!next) {
+      // ✅ All files uploaded
+      const allDone = this.uploadQueue.every(
+        (f) => f.status === 'done' || f.status === 'error'
+      );
+      if (allDone) {
+        // Clear dropzone
+        this.uploadQueue = [];
+        // Notify parent
+        this.fileuploadService.getFiles();
+      }
+      return;
+    }
 
     this.isUploading = true;
     next.status = 'uploading';

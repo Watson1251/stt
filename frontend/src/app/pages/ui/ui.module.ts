@@ -6,7 +6,7 @@ import { UiRoutingModule } from './ui-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 // lord-icon
 import lottie from 'lottie-web';
-import { defineElement } from 'lord-icon-element'
+import { defineElement } from 'lord-icon-element';
 // ngx-masonry
 import { NgxMasonryModule } from 'ngx-masonry';
 
@@ -75,7 +75,7 @@ import { UtilitiesComponent } from './utilities/utilities.component';
     ListsComponent,
     LinksComponent,
     GeneralComponent,
-    UtilitiesComponent
+    UtilitiesComponent,
   ],
   imports: [
     CommonModule,
@@ -94,14 +94,14 @@ import { UtilitiesComponent } from './utilities/utilities.component';
     SimplebarAngularModule,
     ProgressbarModule.forRoot(),
     PaginationModule.forRoot(),
-    FormsModule
-
+    FormsModule,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  exports: [
+    AccordionModule, // ✅ <-- ADD THIS LINE
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-
 export class UiModule {
-
   constructor() {
     defineElement(lottie.loadAnimation);
   }

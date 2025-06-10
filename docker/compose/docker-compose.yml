@@ -1,26 +1,53 @@
 # docker-compose.yml (base)
 # version: "3.8"
 
+x-rabbitmq-env: &rabbitmq-env
+  RABBITMQ_URL: stt-rabbitmq
+  RABBITMQ_PORT: 5672
+  RABBITMQ_USERNAME: admin
+  RABBITMQ_PASSWORD: admin
+  CONVERT_QUEUE: convert_queue
+  SPLIT_QUEUE: split_queue
+  ENHANCE_QUEUE: enhance_queue
+  TRANSCRIBE_QUEUE: transcribe_queue
+  LLM_QUEUE: llm_queue
+  ERROR_QUEUE: error_queue
+
 services:
+  backend-stt:
+    container_name: backend-stt
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfiles/Dockerfile.backend
+    volumes:
+      - ../../db/logs:/logs
+      - ../../db/media:/db/media
+    environment:
+      <<: *rabbitmq-env
+      SERVICE_NAME: backend-stt
+      MONGODB_URL: mongodb://mongo:27017/stt_db
+      UPLOAD_DIR: /db/media/
 
-    backend-stt:
-        container_name: backend-stt
-        build:
-            context: ../../
-            dockerfile: docker/Dockerfiles/Dockerfile.backend
-        volumes:
-            - ../../db/logs:/logs
-            - ../../db/media:/db/media
-        environment:
-            - SERVICE_NAME=backend-stt
-            - MONGODB_URL=mongodb://mongo:27017/stt_db
-            - UPLOAD_DIR=/db/media/
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    restart: always
+    ports:
+      - "27020:27017"
+    volumes:
+      - ../../db/mongo:/data/db
 
-    mongo:
-        image: mongo:6.0
-        container_name: mongo
-        restart: always
-        ports:
-            - "27020:27017"
-        volumes:
-            - ../../db/mongo:/data/db
+  stt-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: stt-rabbitmq
+    volumes:
+      - ../../db/rabbitmq:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

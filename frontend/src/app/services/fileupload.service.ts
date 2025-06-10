@@ -7,10 +7,11 @@ import {
   HttpHeaders,
   HttpResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { SnackbarService } from './snackbar.service';
 import { environment } from '../../environments/environment';
+import { FileModel, UploadFileModel } from '../models/upload-file.model';
 
 const BACKEND_URL = environment.apiUrl + '/file-upload/';
 
@@ -27,6 +28,54 @@ export class FileuploadService {
     private http: HttpClient,
     private snackbarService: SnackbarService
   ) {}
+
+  private files: FileModel[] = [];
+  private filesUpdated = new Subject<any>();
+
+  getFiles() {
+    this.http
+      .get<{ message: string; files: any }>(BACKEND_URL, {
+        observe: 'response',
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this.handleError(error);
+        })
+      )
+      .subscribe((response: any) => {
+        if (response.status == 200 || response.status == 201) {
+          if (response.body == null) {
+            return;
+          }
+
+          var fetchedFiles = response.body.files;
+          var tempFiles: FileModel[] = [];
+
+          fetchedFiles.forEach((item: any) => {
+            const file: FileModel = {
+              id: item._id,
+              filename: item.filename,
+              filepath: item.filepath,
+              uploadTime: Number(item.uploadTime),
+            };
+            tempFiles.push(file);
+          });
+
+          this.files = tempFiles;
+          this.filesUpdated.next(this.files);
+        }
+      });
+  }
+
+  deleteFile(fileId: string) {
+    return this.http
+      .delete<any>(`${BACKEND_URL}${fileId}`, { observe: 'response' })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this.handleError(error);
+        })
+      );
+  }
 
   getAllFiles(): Observable<any[]> {
     return this.http.get<{ files: any[] }>(BACKEND_URL).pipe(
@@ -89,5 +138,9 @@ export class FileuploadService {
 
     this.snackbarService.openSnackBar(message, 'failure');
     return throwError(() => new Error(message));
+  }
+
+  getFilesUpdateListener() {
+    return this.filesUpdated.asObservable();
   }
 }

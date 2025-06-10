@@ -5,3 +5,10 @@ export interface UploadFileModel {
   responseData?: any;
   objectUrl?: string; // used for audio preview
 }
+
+export interface FileModel {
+  id: string;
+  filename: string;
+  filepath: string;
+  uploadTime: Number;
+}

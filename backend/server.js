@@ -2,10 +2,10 @@ const app = require("./app");
 const debug = require("debug")("node-angular");
 const http = require("http");
 const os = require("os");
-const logger = require('./utils/logger');
+const logger = require("./utils/logger");
 logger.info("Starting backend service...");
 
-const normalizePort = val => {
+const normalizePort = (val) => {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -21,7 +21,7 @@ const normalizePort = val => {
   return false;
 };
 
-const onError = error => {
+const onError = (error) => {
   if (error.syscall !== "listen") {
     throw error;
   }
@@ -44,12 +44,12 @@ const getInternalIp = () => {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
+      if (iface.family === "IPv4" && !iface.internal) {
         return iface.address;
       }
     }
   }
-  return '127.0.0.1';
+  return "127.0.0.1";
 };
 
 const onListening = () => {
@@ -67,4 +67,19 @@ app.set("port", port);
 const server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListening);
-server.listen(port, '0.0.0.0');
+server.listen(port, "0.0.0.0");
+
+// Load consumers
+const startConsumers = async () => {
+  const startConvertConsumer = require("./consumers/convert.consumer");
+  const startSplitConsumer = require("./consumers/split.consumer");
+
+  try {
+    await startConvertConsumer();
+    await startSplitConsumer();
+  } catch (err) {
+    logger.error("❌ Failed to start consumers:", err);
+  }
+};
+
+startConsumers();

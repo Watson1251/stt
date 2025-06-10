@@ -19,3 +19,7 @@ services:
       - ../../backend:/backend
       - ../../engines/utils:/backend/utils
     command: npx nodemon server.js
+
+  stt-rabbitmq:
+    ports:
+      - "15673:15672"

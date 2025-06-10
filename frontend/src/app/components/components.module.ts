@@ -6,17 +6,24 @@ import { ComponentsRoutingModule } from './components-routing.module';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { DropfileComponent } from './dropfile/dropfile.component';
-
+import { UiModule } from '../pages/ui/ui.module';
+import { TranscriptionComponent } from './transcription/transcription.component';
+import { PaginatorComponent } from './paginator/paginator.component';
+import { AngularMaterialModule } from '../angular-material.module';
 
 @NgModule({
   declarations: [
     HomeComponent,
-    DropfileComponent
+    DropfileComponent,
+    TranscriptionComponent,
+    PaginatorComponent,
   ],
   imports: [
     CommonModule,
     ComponentsRoutingModule,
-    NgxDropzoneModule
-  ]
+    NgxDropzoneModule,
+    UiModule,
+    AngularMaterialModule,
+  ],
 })
-export class ComponentsModule { }
+export class ComponentsModule {}
