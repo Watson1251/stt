@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { UploadFileModel } from 'src/app/models/upload-file.model';
 import { FileuploadService } from 'src/app/services/fileupload.service';
 import { SnackbarService } from 'src/app/services/snackbar.service';
+import { TranscriptionsService } from 'src/app/services/transcription.service';
 
 @Component({
   selector: 'app-dropfile',
@@ -15,7 +16,8 @@ export class DropfileComponent {
 
   constructor(
     private snackbarService: SnackbarService,
-    private fileuploadService: FileuploadService
+    private fileuploadService: FileuploadService,
+    private transcriptionsService: TranscriptionsService
   ) { }
 
   onSelect(event: any) {
@@ -68,10 +70,26 @@ export class DropfileComponent {
         if (event.progress === 100) {
           next.status = 'done';
           next.responseData = event.result;
-          this.snackbarService.openSnackBar(
-            `تم رفع ${next.file.name} بنجاح`,
-            'success'
-          );
+
+          // 👇 Create a transcription with returned fileId
+          const fileId = event.result?.fileId || event.result?._id || '';
+          if (fileId) {
+            this.transcriptionsService.createTranscription({ fileId, status: 'pending' }).subscribe({
+              next: () => {
+                this.snackbarService.openSnackBar(
+                  `تم رفع ${next.file.name} وإنشاء التفريغ بنجاح`,
+                  'success'
+                );
+              },
+              error: () => {
+                this.snackbarService.openSnackBar(
+                  `تم رفع ${next.file.name} ولكن فشل إنشاء التفريغ`,
+                  'failure'
+                );
+              }
+            });
+          }
+
           this.isUploading = false;
           this.startNextUpload();
         }
@@ -84,8 +102,9 @@ export class DropfileComponent {
         );
         this.isUploading = false;
         this.startNextUpload();
-      },
+      }
     });
+
   }
 
   onRemove(fileModel: UploadFileModel) {

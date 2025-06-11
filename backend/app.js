@@ -10,6 +10,8 @@ const rabbitmq = require("./utils/rabbitmq");
 dotenv.config();
 
 const fileUploadRoutes = require("./routes/file-upload.route");
+const transcriptionRoutes = require("./routes/transcription.route");
+const segmentRoutes = require("./routes/segment.route");
 
 const app = express();
 
@@ -60,6 +62,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/file-upload", fileUploadRoutes);
+app.use("/api/transcription", transcriptionRoutes);
+app.use("/api/segment", segmentRoutes);
 
 // app.use((req, res, next) => {
 //   res.sendFile(path.join(__dirname, "angular", "index.html"));

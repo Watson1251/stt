@@ -18,6 +18,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
+
 interface RowData {
   id: number;
   segmentId: string;
@@ -99,7 +100,9 @@ export class TranscriptionComponent {
     return rowData;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.transcription);
+  }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

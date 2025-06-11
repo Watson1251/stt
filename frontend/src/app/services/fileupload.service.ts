@@ -27,10 +27,16 @@ export class FileuploadService {
   constructor(
     private http: HttpClient,
     private snackbarService: SnackbarService
-  ) {}
+  ) { }
 
   private files: FileModel[] = [];
   private filesUpdated = new Subject<any>();
+
+  retrieveFile(fileId: string): Observable<Blob> {
+    return this.http.get(`${BACKEND_URL}${fileId}`, {
+      responseType: 'blob',
+    });
+  }
 
   getFiles() {
     this.http

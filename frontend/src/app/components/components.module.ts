@@ -10,6 +10,7 @@ import { TranscriptionComponent } from './transcription/transcription.component'
 import { PaginatorComponent } from './paginator/paginator.component';
 import { AngularMaterialModule } from '../angular-material.module';
 import { DropfileComponent } from './dropfile/dropfile.component';
+import { WavesurferComponent } from './wavesurfer/wavesurfer.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { DropfileComponent } from './dropfile/dropfile.component';
     DropfileComponent,
     TranscriptionComponent,
     PaginatorComponent,
+    WavesurferComponent,
   ],
   imports: [
     CommonModule,

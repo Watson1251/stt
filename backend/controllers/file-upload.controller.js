@@ -48,43 +48,11 @@ exports.createFile = async (req, res, next) => {
     );
 
     req.savedFiles = savedFiles; // Pass to next handler
-    next(); // Go to queueFileForProcessing
+    res.status(201).json({ message: "Files uploaded", files: savedFiles });
+
   } catch (err) {
     logger.error("❌ File save error:", err);
     res.status(500).json({ error: "Failed to save file metadata" });
-  }
-};
-
-exports.queueFileForProcessing = async (req, res, next) => {
-  try {
-    const files = req.savedFiles;
-    if (!files || files.length === 0) {
-      return next(); // Skip if no files are saved
-    }
-
-    for (const file of files) {
-      const isAudio = file.mimetype?.startsWith("audio/");
-      const queueName = isAudio
-        ? process.env.SPLIT_QUEUE || "split_queue"
-        : process.env.CONVERT_QUEUE || "convert_queue";
-
-      const payload = {
-        fileId: file._id.toString(),
-        filepath: file.filepath,
-      };
-
-      try {
-        await rabbitmq.publish(queueName, payload);
-        logger.info(`📤 Queued to ${queueName}:`, payload);
-      } catch (err) {
-        logger.error(`❌ Failed to queue to ${queueName}:`, err);
-      }
-    }
-
-    next(); // Continue to final response handler
-  } catch (err) {
-    logger.error("❌ Error in queueFileForProcessing:", err);
-    res.status(500).json({ error: "Failed to queue file(s) for processing" });
   }
 };
 

@@ -10,10 +10,7 @@ import shutil
 
 sys.path.append('/stt/src')
 from stt import convert_to_wav
-from stt import enhance_and_split
-from stt import transcribe, translate
-from stt import create_subfiles
-from transcriber import AudioTranscriber
+from stt import split_wav
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -42,15 +39,15 @@ def api_split():
             }
             return jsonify(result)
 
-        # Convert the video to wav and mono signal (1600 sample rate)
-        # wav_path = convert_to_wav(filepath)
-        logging.info(f"Converted audio file to: {filepath}")
+        # split the audio file into chunks
+        chunks_json = split_wav(filepath)
+        logging.info(f"Split {filepath} audio file into chunks")
         
-        # result = {
-        #     'message': f'تم تجزئة المقطع الصوتي بنجاح {filepath}',
-        #     'code': 200,
-        #     'result': wav_path
-        # }
+        result = {
+            'message': f'تم تجزئة المقطع الصوتي بنجاح {filepath}',
+            'code': 200,
+            'result': chunks_json
+        }
 
     except Exception as e:
         logging.error(f"{e}")

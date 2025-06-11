@@ -9,6 +9,7 @@ export interface TranscriptionModel {
 
 export interface SegmentModel {
   id: string;
+  path: string;
   start: number;
   end: number;
   text: string;

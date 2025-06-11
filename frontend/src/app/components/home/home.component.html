@@ -6,66 +6,46 @@
   </div>
 
   <div class="card-body">
-    <accordion
-      [closeOthers]="true"
+    <accordion [closeOthers]="true"
       class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box"
       [ngClass]="getAccordionStatusClass(transcription.status)"
-      *ngFor="let transcription of paginatedTranscriptions; let i = index"
-      id="accordionBordered"
-    >
+      *ngFor="let transcription of paginatedTranscriptions; let i = index" id="accordionBordered">
       <accordion-group class="accordion-item" [isOpen]="i === 0">
-        <h2
-          accordion-heading
-          class="accordion-header"
-          [id]="'accordionHeader' + i"
-        >
-          <button
-            class="accordion-button"
-            type="button"
-            (mouseenter)="transcription.isHovered = true"
-            (mouseleave)="transcription.isHovered = false"
-          >
+        <h2 accordion-heading class="accordion-header" [id]="'accordionHeader' + i">
+          <button class="accordion-button" type="button" (mouseenter)="transcription.isHovered = true"
+            (mouseleave)="transcription.isHovered = false">
             <div class="filename-container">
-              <i
-                class="me-2"
-                [ngClass]="getFileTypeIcon(transcription.fileId)"
-              ></i>
+              <i class="me-2" [ngClass]="getFileTypeIcon(transcription.fileId)"></i>
               <span class="filename-ltr">{{
                 getFileName(transcription.fileId)
-              }}</span>
+                }}</span>
             </div>
             <div class="filename-container">
               <span class="filename-ltr">{{
                 getStatus(transcription.status)
-              }}</span>
+                }}</span>
             </div>
             <div class="datetime-container">
               <span class="filename-ltr">
                 {{
-                  transcription.isHovered
-                    ? percisedArabicDate(
-                        getFileUploadTime(transcription.fileId)
-                      )
-                    : formatArabicDate(getFileUploadTime(transcription.fileId))
+                transcription.isHovered
+                ? percisedArabicDate(
+                getFileUploadTime(transcription.fileId)
+                )
+                : formatArabicDate(getFileUploadTime(transcription.fileId))
                 }}
               </span>
             </div>
             <div class="action-buttons">
-              <i
-                class="ri-delete-bin-line text-danger delete-icon"
-                (click)="onDeleteFile(transcription.fileId, $event)"
-              ></i>
+              <i class="ri-delete-bin-line text-danger delete-icon"
+                (click)="onDeleteFile(transcription.fileId, $event)"></i>
             </div>
           </button>
         </h2>
-        <div
-          [id]="'accordionCollapse' + i"
-          class="accordion-collapse collapse show"
-        >
+        <div [id]="'accordionCollapse' + i" class="accordion-collapse collapse show">
           <div class="accordion-body">
-            <!-- <app-transcription
-              [transcription]="transcription"
-            ></app-transcription> -->
+            <app-wavesurfer [fileId]="transcription.fileId"></app-wavesurfer>
+            <app-transcription [transcription]="transcription"></app-transcription>
           </div>
         </div>
       </accordion-group>
@@ -73,11 +53,8 @@
   </div>
 
   <div class="card-footer">
-    <app-paginator
-      [dataSource]="dataSource"
-      (pageChange)="
+    <app-paginator [dataSource]="dataSource" (pageChange)="
         updatePaginatedTranscriptions($event.pageIndex, $event.pageSize)
-      "
-    ></app-paginator>
+      "></app-paginator>
   </div>
 </div>
